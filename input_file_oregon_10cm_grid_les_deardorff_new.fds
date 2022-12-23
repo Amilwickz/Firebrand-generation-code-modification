@@ -1,0 +1,132 @@
+&HEAD CHID='SingleMeshOregon10cmGridLES_deardorff', TITLE='Doglas fir 2.6m and 10MC Oregon' /Oregon
+&MESH IJK=84,84,100, XB=-4.2,4.2,-4.2,4.2,0.0,10.0/ 			Mesh 1, 10cm cell
+
+&TIME T_END=40., DT=0.1 / 
+
+&REAC FUEL='CELLULOSE', C=3.4, H=6.2, O=2.5, SOOT_YIELD=0.02, HEAT_OF_COMBUSTION=17700. /The Effect of Sample Size on the Heat Release Rate of Charring Materials, Ritchie, et al., 5th IAFSS 1997
+
+/&MISC COMBUSTION_MODEL_SELECT='COMBUSTION_TWO', SIX=.FALSE. /,RESTART=.TRUE./
+/&MISC CHECK_VN=.TRUE., TURBULENCE_MODEL='DYNAMIC SMAGORINSKY', SIMULATION_MODE='VLES', STRATIFICATION=.FALSE., GVEC(3)=0., NOISE_VELOCITY=0.015/
+&MISC CHECK_VN=.TRUE., TURBULENCE_MODEL='DEARDORFF', SIMULATION_MODE='LES'/
+
+&VENT MB='XMIN', SURF_ID='OPEN' / 
+&VENT MB='XMAX', SURF_ID='OPEN' /
+&VENT MB='YMIN', SURF_ID='OPEN' /
+&VENT MB='YMAX', SURF_ID='OPEN' /
+&VENT MB='ZMAX', SURF_ID='OPEN' /
+
+&SPEC ID='WATER VAPOR' /
+
+!----needle(0-6mm)diameter:65%;, average diameter = 3mm, mass and size distribution firebrand generation Manzello et al 2008 Fire and Materials
+!----twig(0-6mm)diameter:17.5%, average diameter  = 3mm
+!----twig(6-10mm)diameter:17.5%, average diameter = 8mm
+!----length of vegetation particles:0.1m : Douglas fir validation NIST 
+
+!----Dimensions of vegetation needle, twig1 and twig2; moisture content 10%
+&SURF ID                        = 'needle'
+      MATL_ID(1,1:2)            = 'foliage','moisture'
+      MATL_MASS_FRACTION(1,1:2) = 0.9,0.1
+      THICKNESS                 = 0.0015
+      LENGTH                    = 0.1
+      GEOMETRY                  = 'CYLINDRICAL' /
+
+&SURF ID                        = 'twig_1'
+      MATL_ID(1,1:2)            = 'small_twig','moisture'
+      MATL_MASS_FRACTION(1,1:2) = 0.9,0.1
+      THICKNESS                 = 0.0015
+      LENGTH                    = 0.1
+      GEOMETRY                  = 'CYLINDRICAL' /
+
+&SURF ID                        = 'twig_2'
+      MATL_ID(1,1:2)            = 'large_twig','moisture'
+      MATL_MASS_FRACTION(1,1:2) = 0.9,0.1
+      THICKNESS                 = 0.004
+      LENGTH                    = 0.1
+      GEOMETRY                  = 'CYLINDRICAL' /	  
+	  
+	  
+!----Material properties of vegetation, moisture and char;Modelling of tree fires and fires transitioning, Moinuddin et al 2019, CHAR propertise NIST Rudy Mell
+      
+&MATL ID = 'foliage',    DENSITY = 514.,  CONDUCTIVITY = 2.0, SPECIFIC_HEAT= 1.2, N_REACTIONS = 1, REFERENCE_TEMPERATURE = 200.,REFERENCE_RATE=0.0005, HEATING_RATE=1.6, NU_MATL = 0.61, NU_SPEC = 0.39, SPEC_ID = 'CELLULOSE', HEAT_OF_REACTION= 418, MATL_ID  = 'CHAR'  /	
+&MATL ID = 'small_twig', DENSITY = 514.,  CONDUCTIVITY = 2.0, SPECIFIC_HEAT= 1.2, N_REACTIONS = 1, REFERENCE_TEMPERATURE = 200., REFERENCE_RATE=0.0005, HEATING_RATE=1.6, NU_MATL = 0.61, NU_SPEC = 0.39, SPEC_ID = 'CELLULOSE', HEAT_OF_REACTION= 418, MATL_ID  = 'CHAR' /            	
+&MATL ID = 'large_twig', DENSITY = 514.,  CONDUCTIVITY = 2.0, SPECIFIC_HEAT= 1.2, N_REACTIONS = 1, REFERENCE_TEMPERATURE = 200., REFERENCE_RATE=0.0005, HEATING_RATE=1.6, NU_MATL = 0.61, NU_SPEC = 0.39, SPEC_ID = 'CELLULOSE', HEAT_OF_REACTION= 418, MATL_ID  = 'CHAR' /  
+&MATL ID = 'moisture',   DENSITY = 1000., CONDUCTIVITY = 2.0, SPECIFIC_HEAT= 4.184, N_REACTIONS = 1, REFERENCE_TEMPERATURE = 100.,REFERENCE_RATE=0.002, HEATING_RATE=1.6, NU_SPEC = 1.0, SPEC_ID = 'WATER VAPOR', HEAT_OF_REACTION= 2500. /
+&MATL ID = 'CHAR',       DENSITY  = 300., CONDUCTIVITY = 2.0, SPECIFIC_HEAT = 1.2 /
+
+!----Insert vegetation as a cone shaped tree. N_PARTICLES=(total mass of vegetation species/ mass of a single vegetation particle of that species)
+!----N_FIREBRAND_PER_KG_DRY_ML and N_FIREBRAND_PER_KG_FMC_ML 
+
+&PART ID='dgl needle',      SAMPLING_FACTOR=50, SURF_ID='needle', PROP_ID='tree image_1', QUANTITIES='PARTICLE TEMPERATURE','PARTICLE MASS','PARTICLE DIAMETER', STATIC=.TRUE., RGB= 0,255,60  /
+&INIT PART_ID='dgl needle', XYZ=0.0,0.0,0.15, RADIUS=0.75, HEIGHT=2.6, SHAPE='CONE', N_PARTICLES=11600, MASS_PER_VOLUME=4.208, N_FBRAND_PKG_ML=432/Douglas fir tree with 2.6 m height ------ > 431.5 pcs/kg
+&PROP ID='tree image_1',    SMOKEVIEW_ID='TUBE', SMOKEVIEW_PARAMETERS='L=0.1','D=0.003', 'RNDXYZ=1'/
+
+&PART ID='dgl twig_1', SAMPLING_FACTOR=5, SURF_ID='twig_1', PROP_ID='tree image_2', QUANTITIES='PARTICLE TEMPERATURE','PARTICLE MASS','PARTICLE DIAMETER', STATIC=.TRUE., RGB= 0,255,60  /
+&INIT PART_ID='dgl twig_1', XYZ=0.0,0.0,0.15, RADIUS=0.75, HEIGHT=2.6, SHAPE='CONE', N_PARTICLES=3120, MASS_PER_VOLUME=1.133  /
+&PROP ID='tree image_2', SMOKEVIEW_ID='TUBE', SMOKEVIEW_PARAMETERS='L=0.1','D=0.003', 'RNDXYZ=1'/
+
+&PART ID='dgl twig_2', SAMPLING_FACTOR=5, SURF_ID='twig_2', PROP_ID='tree image_3', QUANTITIES='PARTICLE TEMPERATURE','PARTICLE MASS','PARTICLE DIAMETER', STATIC=.TRUE., RGB= 0,255,60  /
+&INIT PART_ID='dgl twig_2', XYZ=0.0,0.0,0.15, RADIUS=0.75, HEIGHT=2.6, SHAPE='CONE', N_PARTICLES=440, MASS_PER_VOLUME=1.133  /
+&PROP ID='tree image_3', SMOKEVIEW_ID='TUBE', SMOKEVIEW_PARAMETERS='L=0.1','D=0.008', 'RNDXYZ=1'/
+
+&CTRL ID='controller 1', FUNCTION_TYPE='CUSTOM', INPUT_ID='clock', RAMP_ID='ramp 1'/firebrands emmiting time
+
+&RAMP ID='ramp 1', T= 0.00, F=0. /
+&RAMP ID='ramp 1', T= 1.9, F=0. /
+&RAMP ID='ramp 1', T= 2.0, F= 1.0 /
+&RAMP ID='ramp 1', T= 34, F= 1.0 /
+&RAMP ID='ramp 1', T= 34.1, F=0. /
+&RAMP ID='ramp 1', T=45, F=0. /
+
+!----Circular propane burner:30KW; radius 80cm 
+
+&SURF ID='INSIDE', COLOR='BLUE'/    
+&SURF ID='FIRE', HRRPUA=136., COLOR='YELLOW', RAMP_Q='fire_ramp' /       
+&SURF ID='ground', TMP_FRONT=900., DEFAULT=.TRUE. /
+
+&RAMP ID='fire_ramp', T= 0.0, F=0.0/
+&RAMP ID='fire_ramp', T=1.0, F=0.0/
+&RAMP ID='fire_ramp', T=2.0, F=1.0/
+&RAMP ID='fire_ramp', T=17.0, F=1.0/
+&RAMP ID='fire_ramp', T=18.0, F=0.0/
+&RAMP ID='fire_ramp', T=30.0, F=0.0/
+ 
+&VENT XB=-0.75,0.75,-0.75,0.75,0.0,0.0, XYZ=0,0,0, RADIUS=0.3, SURF_ID='INSIDE' / 
+&VENT XB=-0.75,0.75,-0.75,0.75,0.0,0.0, XYZ=0,0,0, RADIUS=0.4, SURF_ID='FIRE' /
+&VENT XB=-0.75,0.75,-0.75,0.75,0.0,0.0, XYZ=0,0,0, RADIUS=0.4, SURF_ID='ground' /
+
+&DUMP MASS_FILE=.FALSE.,DT_RESTART=5. /
+
+!----Slice files
+
+&SLCF PBY=0.0, 	QUANTITY='TEMPERATURE', VECTOR=.TRUE. /
+&SLCF PBZ=0.1, 	QUANTITY='TEMPERATURE', VECTOR=.TRUE. /
+&SLCF PBZ=0.0, 	QUANTITY='TEMPERATURE', VECTOR=.TRUE. /
+&SLCF PBY=0.0, 	QUANTITY='VELOCITY', VECTOR=.TRUE. /
+&SLCF PBZ=0.1, 	QUANTITY='PARTICLE FLUX Z' /
+&SLCF PBZ=0.9, 	QUANTITY='PARTICLE FLUX Z' /
+&SLCF PBX=2.0, 	QUANTITY='PARTICLE FLUX X' /
+&SLCF PBX=-2.0, QUANTITY='PARTICLE FLUX X' /
+&SLCF PBY=2.0, 	QUANTITY='PARTICLE FLUX Y' /
+&SLCF PBY=-2.0, QUANTITY='PARTICLE FLUX Y' /
+
+
+!----Devices to measure velocity
+
+&DEVC XYZ=0,0,0, 	ID='vel1', QUANTITY='VELOCITY' /
+&DEVC XYZ=0,0,0.5, 	ID='vel2', QUANTITY='VELOCITY' /
+&DEVC XYZ=0,0,1, 	ID='vel3', QUANTITY='VELOCITY' /
+&DEVC XYZ=0,0,2.6, 	ID='vel4', QUANTITY='VELOCITY' /
+&DEVC XYZ=0,0,8.0, 	ID='vel5', QUANTITY='VELOCITY' /
+
+!----Devices to measure temperature
+
+&DEVC XYZ=0,0,0, 	ID='temp1', QUANTITY='TEMPERATURE' /
+&DEVC XYZ=0,0,0.5, 	ID='temp2', QUANTITY='TEMPERATURE' /
+&DEVC XYZ=0,0,1.0, 	ID='temp3', QUANTITY='TEMPERATURE' /
+&DEVC XYZ=0,0,2.6, 	ID='temp4', QUANTITY='TEMPERATURE' /
+&DEVC XYZ=2,2,0, 	ID='temp5', QUANTITY='TEMPERATURE' /
+&DEVC XYZ=3,3,0, 	ID='temp6', QUANTITY='TEMPERATURE' /
+
+&DEVC XYZ=0,0,0, ID='clock', QUANTITY='TIME'/
+
+&TAIL /
